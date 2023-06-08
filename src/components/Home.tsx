@@ -1,6 +1,8 @@
 import styled from "styled-components";
-
 import { BsDot, BsPlayFill, BsFillPauseFill } from "react-icons/bs";
+import { useEffect, useState } from "react";
+import { useRecoilState } from "recoil";
+import { intervalState, roundWithGoalState, timeState } from "../atoms";
 
 const Container = styled.div`
   width: 100%;
@@ -39,7 +41,7 @@ const Card = styled.div`
   justify-content: center;
   align-items: center;
   background-color: #121c26;
-  border-radius: 3px;
+  border-radius: 5px;
 `;
 
 const CardText = styled.h3`
@@ -96,24 +98,81 @@ const RoundText = styled.p`
 `;
 
 const Home = () => {
+  const seconds = 3;
+  const [isRunning, setIsRunning] = useState(false);
+
+  const [roundWithGoal, setRoundWithGoal] = useRecoilState(roundWithGoalState);
+  const [intervalId, setIntervalId] = useRecoilState(intervalState);
+  const [time, setTime] = useRecoilState(timeState);
+
+  const timeFormat = (seconds: number) => {
+    const duration = new Date(seconds * 1000).toISOString();
+    const timeString = duration.split("T")[1];
+    const formattedTime = timeString.split(".")[0];
+    return formattedTime;
+  };
+
+  const handleStart = () => {
+    setIsRunning(!isRunning);
+
+    const id = setInterval(() => {
+      setTime((prev) => prev - 1);
+    }, 1000);
+
+    setIntervalId(id + "");
+  };
+
+  const handlePause = () => {
+    setIsRunning(!isRunning);
+    clearInterval(intervalId + "");
+  };
+
+  useEffect(() => {
+    if (time === 0) {
+      clearInterval(intervalId + "");
+      setTime(seconds);
+      setRoundWithGoal((prev) => {
+        return {
+          ...prev,
+          round: prev.round + 1,
+        };
+      });
+      setIsRunning(false);
+    }
+
+    if (roundWithGoal.round === 2) {
+      clearInterval(intervalId + "");
+      setTime(seconds);
+      setRoundWithGoal((prev) => {
+        return {
+          ...prev,
+          round: 0,
+          goal: prev.goal + 1,
+        };
+      });
+      setIsRunning(false);
+    }
+  }, [time]);
+
   return (
     <Container>
-      <Header>Create by jhun</Header>
+      <Header>{"jhun ㅇ_<"}</Header>
       <CardContainer>
         <Card>
-          <CardText>25</CardText>
+          <CardText>{timeFormat(time).split(":")[1]}</CardText>
         </Card>
         <IconContainer>
           <BsDot />
           <BsDot />
         </IconContainer>
         <Card>
-          <CardText>00</CardText>
+          <CardText>{timeFormat(time).split(":")[2]}</CardText>
         </Card>
       </CardContainer>
+
       <ButtonContainer>
-        <Button>
-          {true ? (
+        <Button onClick={isRunning ? handlePause : handleStart}>
+          {isRunning ? (
             <BsFillPauseFill />
           ) : (
             <BsPlayFill
@@ -128,17 +187,17 @@ const Home = () => {
       <RoundContainer>
         <Round>
           <RoundText>
-            <span>0</span>
+            <span>{roundWithGoal.round}</span>
             <span>/</span>
-            <span>4</span>
+            <span>2</span>
           </RoundText>
           <p>ROUND</p>
         </Round>
         <Round>
           <RoundText>
-            <span>0</span>
+            <span>{roundWithGoal.goal}</span>
             <span>/</span>
-            <span>4</span>
+            <span>3</span>
           </RoundText>
           <p>GOAL</p>
         </Round>
