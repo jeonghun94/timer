@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useRecoilState } from "recoil";
 import { intervalState, roundWithGoalState, timeState } from "../atoms";
-import { MILLI_SECOND, ROUND_LIMIT } from "../constrant";
+import { MILLI_SECOND, ROUND_LIMIT } from "../constants";
 import { formatTime } from "../utils";
 import Layout from "./Layout";
 import TimerButton from "./Button";
@@ -17,13 +17,13 @@ const Home = () => {
   const [isRunning, setIsRunning] = useState(false);
   const [minutes, setMinutes] = useState("");
   const [seconds, setSeconds] = useState("");
-  const [first, setFirst] = useState(false);
+  const [isFirstSecond, setIsFirstSecond] = useState(false);
 
   const handleStart = () => {
     setIsRunning(!isRunning);
     const timer = setInterval(() => {
       setTime((prev) => prev - 1);
-    }, 100);
+    }, 1000);
 
     setIntervalId(String(timer));
   };
@@ -34,7 +34,7 @@ const Home = () => {
   };
 
   const Minutes = ({ minutes }: { minutes: string }) => {
-    return <TimerCard value={minutes} initialScale={first ? 0.7 : 1} />;
+    return <TimerCard value={minutes} initialScale={isFirstSecond ? 0.7 : 1} />;
   };
 
   const Seconds = ({ seconds }: { seconds: string }) => {
@@ -66,7 +66,7 @@ const Home = () => {
     setMinutes(timeFormatted[1]);
     setSeconds(timeFormatted[2]);
 
-    seconds === "01" ? setFirst(true) : setFirst(false);
+    seconds === "01" ? setIsFirstSecond(true) : setIsFirstSecond(false);
   }, [time]);
 
   return (

@@ -1,5 +1,5 @@
 import { atom } from "recoil";
-import { MILLI_SECOND } from "./constrant";
+import { MILLI_SECOND } from "./constants";
 
 interface IRoundGoal {
   round: number;

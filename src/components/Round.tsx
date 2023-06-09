@@ -1,7 +1,7 @@
 import styled from "styled-components";
 import { useRecoilValue } from "recoil";
 import { roundWithGoalState } from "../atoms";
-import { GOAL_LIMIT, ROUND_LIMIT } from "../constrant";
+import { GOAL_LIMIT, ROUND_LIMIT } from "../constants";
 
 const Container = styled.div`
   width: 100%;
