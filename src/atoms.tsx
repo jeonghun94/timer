@@ -1,5 +1,10 @@
 import { atom } from "recoil";
 
+interface IRoundGoal {
+  round: number;
+  goal: number;
+}
+
 export const intervalState = atom<string | null>({
   key: "interval",
   default: null,
@@ -7,13 +12,8 @@ export const intervalState = atom<string | null>({
 
 export const timeState = atom<number>({
   key: "time",
-  default: 3,
+  default: 1500,
 });
-
-interface IRoundGoal {
-  round: number;
-  goal: number;
-}
 
 export const roundWithGoalState = atom<IRoundGoal>({
   key: "roundWithGoal",
