@@ -1,4 +1,5 @@
 import { atom } from "recoil";
+import { MILLI_SECOND } from "./constrant";
 
 interface IRoundGoal {
   round: number;
@@ -12,7 +13,7 @@ export const intervalState = atom<string | null>({
 
 export const timeState = atom<number>({
   key: "time",
-  default: 1500,
+  default: MILLI_SECOND,
 });
 
 export const roundWithGoalState = atom<IRoundGoal>({
