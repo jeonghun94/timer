@@ -1,59 +1,29 @@
-import styled from "styled-components";
 import { useEffect, useState } from "react";
 import { useRecoilState } from "recoil";
 import { intervalState, roundWithGoalState, timeState } from "../atoms";
 import { MILLI_SECOND, ROUND_LIMIT } from "../constrant";
-import { motion } from "framer-motion";
 import { formatTime } from "../utils";
 import Layout from "./Layout";
 import TimerButton from "./Button";
 import RoundWithGoal from "./Round";
-
-const CardContainer = styled.div`
-  width: 100%;
-  height: auto;
-  display: flex;
-  justify-content: center;
-  gap: 1rem;
-`;
-
-const Card = styled(motion.div)`
-  width: 30%;
-  padding: 70px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background-color: #121c26;
-  border-radius: 10px;
-`;
-
-const CardText = styled.h3`
-  color: #bcc0c3;
-  font-size: 3.5rem;
-`;
-
-const Colon = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
-  font-size: 3rem;
-`;
+import Timer from "./Timer/Timer";
+import TimerCard from "./Timer/TimerCard";
 
 const Home = () => {
-  const [roundWithGoal, setRoundWithGoal] = useRecoilState(roundWithGoalState);
   const [intervalId, setIntervalId] = useRecoilState(intervalState);
+  const [roundWithGoal, setRoundWithGoal] = useRecoilState(roundWithGoalState);
   const [time, setTime] = useRecoilState(timeState);
-  const [isRunning, setIsRunning] = useState(false);
 
-  const [t, setT] = useState("");
+  const [isRunning, setIsRunning] = useState(false);
+  const [minutes, setMinutes] = useState("");
+  const [seconds, setSeconds] = useState("");
   const [first, setFirst] = useState(false);
 
   const handleStart = () => {
     setIsRunning(!isRunning);
     const timer = setInterval(() => {
       setTime((prev) => prev - 1);
-    }, 1000);
+    }, 100);
 
     setIntervalId(String(timer));
   };
@@ -63,28 +33,12 @@ const Home = () => {
     clearInterval(String(intervalId));
   };
 
-  const Card2 = ({ children }: { children?: React.ReactNode }) => {
-    return (
-      <Card
-        initial={{ scale: 0.7 }}
-        animate={{ scale: 1 }}
-        transition={{ duration: 0.3 }}
-      >
-        {children}
-      </Card>
-    );
+  const Minutes = ({ minutes }: { minutes: string }) => {
+    return <TimerCard value={minutes} initialScale={first ? 0.7 : 1} />;
   };
 
-  const Card1 = ({ children }: { children?: React.ReactNode }) => {
-    return (
-      <Card
-        initial={{ scale: first ? 0.7 : 1 }}
-        animate={{ scale: 1 }}
-        transition={{ duration: 0.3 }}
-      >
-        {children}
-      </Card>
-    );
+  const Seconds = ({ seconds }: { seconds: string }) => {
+    return <TimerCard value={seconds} initialScale={0.7} />;
   };
 
   useEffect(() => {
@@ -96,12 +50,7 @@ const Home = () => {
         round: roundWithGoal.round === 2 ? 0 : prev.round + 1,
       }));
       setIsRunning((prev) => !prev);
-      setFirst(true);
     }
-
-    setT(formatTime(time).split(":")[2]);
-
-    t === "00" ? setFirst(true) : setFirst(false);
 
     if (roundWithGoal.round >= ROUND_LIMIT) {
       clearInterval(Number(intervalId));
@@ -112,19 +61,20 @@ const Home = () => {
       }));
       setIsRunning(false);
     }
+    const timeFormatted = formatTime(time).split(":");
+
+    setMinutes(timeFormatted[1]);
+    setSeconds(timeFormatted[2]);
+
+    seconds === "01" ? setFirst(true) : setFirst(false);
   }, [time]);
 
   return (
     <Layout>
-      <CardContainer>
-        <Card1>
-          <CardText>{formatTime(time).split(":")[1]}</CardText>
-        </Card1>
-        <Colon>:</Colon>
-        <Card2>
-          <CardText>{formatTime(time).split(":")[2]}</CardText>
-        </Card2>
-      </CardContainer>
+      <Timer
+        minutes={<Minutes minutes={minutes} />}
+        seconds={<Seconds seconds={seconds} />}
+      />
 
       <TimerButton
         isRunning={isRunning}
