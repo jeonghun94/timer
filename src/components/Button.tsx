@@ -11,8 +11,8 @@ const Container = styled.div`
 `;
 
 const IButton = styled(motion.button)`
-  width: 20%;
-  height: 60%;
+  width: 100px;
+  height: 100px;
   display: flex;
   justify-content: center;
   align-items: center;
